@@ -1,8 +1,10 @@
 # Gitlab Kubernetes Runner Setup
 
 ## Introduction
+
 This repository will provides you step by step guides to register your kubernetes cluster as Gitlab Runner Executor.
 Some assumption used in here:
+
 1. Kubernetes cluster have 2 worker nodes - you can modify it as you like
 2. Using Minio as local S3 cache for the Gitlab Runner
 3. All sensitive values are masked with environment variables. Make sure you change it before run the script
