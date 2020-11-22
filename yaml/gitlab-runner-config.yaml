@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-runner-config
+  namespace: gitlab-runner
+data:
+  config.toml: |-
+    concurrent = 4
+    [[runners]]
+      name = "${RUNNER_NAME}"
+      url = "${BASE_CICD_URL}/ci"
+      token = "${KUBERNETES_GITLAB_RUNNER_TOKEN}"
+      executor = "kubernetes"
+      [runners.cache]
+        Type = "s3"
+        Path = "gitlab-runner"
+        Shared = false
+        [runners.cache.s3]
+          ServerAddress = "minio:9000"
+          AccessKey = "${MINIO_ACCESS_KEY}"
+          SecretKey = "${MINIO_SECRET_KEY}"
+          BucketName = "gitlab-runner"
+          Insecure = true
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        image = "itsolarch/library:cicd-1.0.1"
+        privileged = true
+        poll_timeout = 600
+        cpu_request = "1"
+        service_cpu_request = "200m"
+        disable_cache = false
+        shm_size = 0
+        tls_verify = false
+        #pod_annotations= "consul.hashicorp.com/connect-inject=false"
+        #pod_annotations_overwrite_allowed = true
+      [[runners.kubernetes.volumes.host_path]]
+        name = "docker"
+        mount_path = "/var/run/docker.sock"
+        host_path = "/var/run/docker.sock"
+      [[runners.kubernetes.volumes.empty_dir]]
+        name = "docker-certs"
+        mount_path = "/certs/client"
+        medium = "Memory"

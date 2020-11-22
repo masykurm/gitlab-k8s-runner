@@ -1,0 +1,5 @@
+unregister-all-runners.sh
+unregister-local-runner.sh
+yaml/minio-standalone-pvc.yaml.bak
+cert/*
+.env

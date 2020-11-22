@@ -1,0 +1,35 @@
+## Set default accesskey, secretkey
+##
+accessKey: "minio"
+secretKey: "minio123"
+
+## Use existing pv-claim
+##
+persistence:
+  existingClaim: "minio-pv-claim-1"
+  storageClass: null
+  #VolumeName: "minio-pv-wk1"
+  #accessMode: ReadWriteOnce
+  #size: 4Gi
+
+## Create a bucket after minio install
+##
+defaultBucket:
+  enabled: true
+  ## If enabled, must be a string with length > 0
+  name: "gitlab-runner"
+  ## Can be one of none|download|upload|public
+  policy: none
+  ## Purge if bucket exists already
+  purge: false
+
+## Expose the Minio service to be accessed from outside the cluster (LoadBalancer service).
+## or access it from within the cluster (ClusterIP service). Set the service type and the port to serve it.
+## ref: http://kubernetes.io/docs/user-guide/services/
+##
+#service:
+#  type: ClusterIP
+#  clusterIP: ~
+#  port: 9000
+#  nodePort: 32000
+

@@ -1,0 +1,50 @@
+concurrent = 4
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "${RUNNER_NAME}"
+  url = "${BASE_CICD_URL}/ci" # example https://gitlab.domain.co.id
+  token = "${KUBERNETES_GITLAB_RUNNER_TOKEN}"
+  executor = "kubernetes"
+  [runners.cache]
+    Type = "s3"
+    Path = "gitlab-runner"
+    [runners.cache.s3]
+      ServerAddress = "minio:9000"
+      AccessKey = "${MINIO_ACCESS_KEY}"
+      SecretKey = "${MINIO_SECRET_KEY}"
+      BucketName = "gitlab-runner"
+      Insecure = true
+  [runners.kubernetes]
+    host = "http://localhost:6443"
+    bearer_token_overwrite_allowed = false
+    image = "itsolarch/library:dev02"
+    namespace = "gitlab-runner"
+    namespace_overwrite_allowed = ""
+    privileged = true
+    cpu_request = "1"
+    service_cpu_request = "200m"
+    poll_timeout = 600
+    service_account= "gitlab-runner"
+    service_account_overwrite_allowed = ""
+    pod_annotations_overwrite_allowed = ""
+    [runners.kubernetes.affinity]
+    [runners.kubernetes.pod_security_context]
+    [[runners.kubernetes.volumes.host_path]]
+       name = "docker"
+       mount_path = "/var/run/docker.sock"
+       host_path = "/var/run/docker.sock"
+    [[runners.kubernetes.volumes.host_path]]
+       name = "kubeconfig"
+       mount_path = "/config"
+       read_only = true
+       host_path = "~/.kube/config"
+    [[runners.kubernetes.volume.host_path]]
+       name = "cicd-cacrt"
+       mount_path= "/etc/gitlab-runner/certs/ca.crt"
+       host_path = "/home/masykurm/k8s-runner"
+
+

@@ -1,0 +1,58 @@
+## The GitLab Server URL (with protocol) that want to register the runner against
+## ref: https://docs.gitlab.com/runner/commands/README.html#gitlab-runner-register
+##
+gitlabUrl: ${BASE_CICD_URL} # example  https://gitlab.domain.co.id/
+
+## The Registration Token for adding new Runners to the GitLab Server. This must
+## be retrieved from your GitLab Instance.
+## ref: https://docs.gitlab.com/ce/ci/runners/README.html
+##
+runnerRegistrationToken: "${KUBERNETES_GITLAB_RUNNER_TOKEN}"
+
+## Unregister all runners before termination
+##
+unregisterRunners: true
+
+## When stopping ther runner, give it time to wait for it's jobs to terminate.
+##
+terminationGracePeriodSeconds: 3600
+
+## Configure the maximum number of concurrent jobs
+## ref: https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
+##
+concurrent: 5
+
+## Defines in seconds how often to check GitLab for a new builds
+## ref: https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
+##
+checkInterval: 20
+
+## For RBAC support:
+rbac:
+  create: false
+  clusterWideAccess: false
+  serviceAccountName: gitlab-runner
+  ## Configure integrated Prometheus metrics exporter
+  ## ref: https://docs.gitlab.com/runner/monitoring/#configuration-of-the-metrics-http-server
+metrics:
+  enabled: false
+
+## Configuration for the Pods that that the runner launches for each new job
+##
+runners:
+  ## Default container image to use for builds when none is specified
+  ##
+  image: ubuntu:16.04
+  privileged: true
+
+  cache:
+    ## General settings
+    cacheType: s3
+    cacheShared: true
+
+    ## S3 settings
+    s3ServerAddress: "minio:9000"
+    s3BucketName: "gitlab-runner"
+    s3BucketLocation:
+    s3CacheInsecure: true
+    secretName: minio

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: gitlab-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gitlab-runner
+  template:
+    metadata:
+      labels:
+        name: gitlab-runner
+    spec:
+      serviceAccountName: gitlab-admin
+      containers:
+        - args:
+          - run
+          image: gitlab/gitlab-runner:latest
+          imagePullPolicy: Always
+          name: gitlab-runner
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "100m"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/gitlab-runner/config.toml
+              readOnly: true
+              subPath: config.toml
+            # add this if you host your own gitlab cicd with self sign certificate
+            - name: gitlab-crt
+              mountPath: /etc/gitlab-runner/certs/ca.crt
+      volumes:
+        - name: config
+          configMap:
+            name: gitlab-runner-config
+        # add this if you host your own gitlab cicd with self sign certificate
+        - name: gitlab-crt
+          hostPath:
+            path: __TLS_CA_FILE__ # replace with the certificate location of your hosted gitlab cicd
+      restartPolicy: Always
